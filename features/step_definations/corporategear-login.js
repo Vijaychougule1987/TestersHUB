@@ -2,17 +2,6 @@ const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 const { expect } = require('@playwright/test');
 const { chromium } = require('playwright');
 
-Before(async function () {
-  this.browser = await chromium.launch({ headless: false });  // Launching the browser
-  this.context = await this.browser.newContext(); // Creating a new context
-  this.page = await this.context.newPage(); // Creating a new page
-});
-
-After(async function () {
-  await this.page.close();  // Closing the page
-  await this.browser.close();  // Closing the browser after the test
-});
-
 // Step 1: Navigate to Corporate Gear website
 Given('the user navigates to the Corporate Gear website', async function () {
     await this.page.goto('https://www.corporategear.com/');
@@ -41,4 +30,27 @@ When('the user clicks on the "SIGN IN" button', async function () {
 Then('the user should be redirected to the landing home page', async function () {
   // Update the URL check
   await expect(this.page).toHaveURL("https://www.corporategear.com/");  
+});
+
+//Scenario 2 ------------------------------------------------------------------------------------
+
+// Enter invalid email and password
+When('the user enters an invalid email and password', async function () {
+  await this.page.fill('input[name="email"]', 'cypresstest28+invalid@gmail.com');
+  await this.page.fill('input[name="password"]', 'Invalid@123');
+});
+
+
+// Error message  
+Then('an error message "Username and password invalid" should be displayed', async function () {
+  const errorMessageLocator = this.page.locator('div.mb-4.text-center:has-text("User name and password invalid.")');
+    
+    // Wait for the error message to appear with a timeout of 10 seconds (10000 ms)
+    await errorMessageLocator.waitFor({ timeout: 500000 });
+    
+    // Assert that the message is displayed
+    const errorMessageText = await errorMessageLocator.textContent();
+    if (!errorMessageText.includes("User name and password invalid.")) {
+      throw new Error(`Expected error message, but found: ${errorMessageText}`);
+    }
 });

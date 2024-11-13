@@ -14,3 +14,8 @@ class CustomWorld {
 
 setDefaultTimeout(60000);
 setWorldConstructor(CustomWorld); */
+
+
+module.exports = {
+  default: `--format json --publish-quiet --timeout 20000`, // 20 seconds
+};
